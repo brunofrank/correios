@@ -1,0 +1,46 @@
+= Calculadora dos Correios
+
+Gem para cálculo de frete usando o webservices dos correios. http://www.correios.com.br/webservices/
+
+== Instalação
+
+ gem install calculadora-correios
+ 
+== Como Usar
+
+  require 'calculadora-correios'
+
+  begin
+    Correios.calcula_frete(Correios::Servico::PAC, 76410000, 74932180, 0.4, 17, 16,16,16)
+  rescue Correios::InvalidCalcException => e
+    puts e.message
+  end
+  
+  Em caso de algum problema com os dados informados será levantada a exception:
+
+  Correios::InvalidCalcException
+  
+== Outras informações
+
+  Definição do método calcula frete:
+
+  calcula_frete(tipo, cep_origem, cep_destino, peso, comprimento, 
+                altura, largura, diametro, mao_propria = NAO, 
+                valor_declarado = 0, aviso_recebimento = NAO)  
+  
+  
+  Serviço:
+  
+  Correios::Servico::PAC
+  Correios::Servico::SEDEX
+  Correios::Servico::SEDEX10
+  Correios::Servico::SEDEX_HOJE
+  Correios::Servico::ESEDEX
+  Correios::Servico::MALOTE
+  
+== Contato
+
+Caso tenha alguma dúvida ou sugestão entre em contato: bfscordeiro (em) gmail.com
+
+
+Copyright (c) 2010 Bruno Cordeiro, released under the MIT license
