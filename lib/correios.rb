@@ -3,21 +3,34 @@ require 'xmlsimple'
 
 class Correios
   
-  class InvalidCalcException < Exception
-    attr_reader :message
-    
-    def initialize(message)
-      @message = message
-    end
-  end
-  
-  class Servico     
+  class Servico
     PAC        = 41106
     SEDEX      = 40010
     SEDEX10    = 40215
     SEDEX_HOJE = 40290
     ESEDEX     = 81019    
-    MALOTE     = 44105
+    
+    SERVICOS = {
+      41106 => :pac,
+      40010 => :sedex,
+      40215 => :sedex10,
+      40290 => :sedex_hoje,
+      81019 => :esedex
+    }    
+    
+    attr_reader :servico, :valor, :prazo, :erro, :message
+    
+    def initialize(servico)
+      @servico = SERVICOS[servico["Codigo"].to_s.to_i]
+      @valor = servico["Valor"].to_s.gsub(',', '.').to_f
+      @prazo = servico["PrazoEntrega"].to_s.to_i
+      @erro = servico["Erro"].to_s
+      @message = servico["MsgErro"].to_s
+    end
+    
+    def valid?
+      @erro == '0'
+    end
   end
   
   SIM = 'S'
@@ -28,7 +41,7 @@ class Correios
     @cep_destino = cep_destino     
   end
   
-  def calcula_frete(tipo, peso, comprimento, altura, largura, diametro, mao_propria = NAO, 
+  def calcular_frete(servicos, peso, comprimento, altura, largura, diametro, mao_propria = NAO, 
                     valor_declarado = 0, aviso_recebimento = NAO)
     host = 'http://ws.correios.com.br'
     path = '/calculador/CalcPrecoPrazo.aspx'
@@ -37,7 +50,7 @@ class Correios
       :nCdEmpresa => '',
       :sDsSenha => '',
       :StrRetorno => "xml",
-      :nCdServico => tipo,
+      :nCdServico => servicos.to_a.join(','),
       :sCepOrigem => @cep_origem,
       :sCepDestino => @cep_destino,
       :nVlPeso => peso,
@@ -48,20 +61,22 @@ class Correios
       :nVlDiametro => diametro,
       :sCdMaoPropria => mao_propria,
       :nVlValorDeclarado => valor_declarado,
-      :resposta => "Xml",
       :sCdAvisoRecebimento => aviso_recebimento
     }                                
     
     params = params.to_a.map {|item| item.to_a.join('=')} .join('&')
     
     xml = XmlSimple.xml_in(open("#{host}#{path}?#{params}").read)
-    if xml["cServico"].first["Erro"].first == '0'    
-      {
-        :valor => xml['cServico'].first["Valor"].to_s.gsub(',', '.').to_f,
-        :prazo => xml['cServico'].first["PrazoEntrega"].to_s.to_i
-      } 
+
+    if xml["cServico"].size > 1
+      servicos = []
+      xml["cServico"].each do |servico|
+        servicos << Servico.new(servico)
+      end
     else
-      raise InvalidCalcException, xml["cServico"].first["MsgErro"].first 
+      servicos = Servico.new(xml["cServico"].first)
     end
+    
+    return servicos
   end
 end

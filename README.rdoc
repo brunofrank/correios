@@ -9,23 +9,23 @@ Gem para cálculo de frete usando o e rastreamento dos correios usando webservic
 == Como Usar
 
   require 'correios'
-
-  begin
-    correios = Correios.new(76410000, 74932180)
-    correios.calcula_frete(Correios::Servico::PAC, 0.4, 17, 16,16,16)
-  rescue Correios::InvalidCalcException => e
-    puts e.message
-  end
   
-  Em caso de algum dado inválido será levantada a exception:
+  # Para calcular apenas um serviço
+  correios = Correios.new(76410000, 74932180)
+  correios.calcular_frete(Correios::Servico::PAC, 0.4, 17, 16,16,16)
 
-  Correios::InvalidCalcException
+
+  # Para calcular mais de um serviço
+  #Neste caso o retorno será um array.  
+  correios = Correios.new(76410000, 74932180)
+  correios.calcular_frete([Correios::Servico::PAC, Correios::Servico::SEDEX], 0.4, 17, 16,16,16)
   
+
 == Outras informações
 
   Definição do método calcula frete:
 
-  calcula_frete(tipo, peso, comprimento, 
+  calcular_frete(tipo, peso, comprimento, 
                 altura, largura, diametro, mao_propria = NAO, 
                 valor_declarado = 0, aviso_recebimento = NAO)  
   
@@ -37,7 +37,6 @@ Gem para cálculo de frete usando o e rastreamento dos correios usando webservic
   Correios::Servico::SEDEX10
   Correios::Servico::SEDEX_HOJE
   Correios::Servico::ESEDEX
-  Correios::Servico::MALOTE
   
 == Contato
 
