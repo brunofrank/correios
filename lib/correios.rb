@@ -41,7 +41,7 @@ class Correios
     @cep_destino = cep_destino     
   end
   
-  def calcular_frete(servicos, peso, comprimento, altura, largura, diametro, mao_propria = NAO, 
+  def calcular_frete(servicos, peso, comprimento, altura, largura, diametro = 0, mao_propria = NAO, 
                     valor_declarado = 0, aviso_recebimento = NAO)
     host = 'http://ws.correios.com.br'
     path = '/calculador/CalcPrecoPrazo.aspx'
