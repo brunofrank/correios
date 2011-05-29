@@ -4,28 +4,32 @@ Gem para cálculo de frete usando o e rastreamento dos correios usando webservic
 
 == Instalação
 
- gem install correios
+  $ gem install correios
  
 == Como Usar
 
-  require 'correios'
+  > require 'correios'
   
   # Para calcular apenas um serviço
-  correios = Correios.new(76410000, 74932180)
-  correios.calcular_frete(Correios::Servico::PAC, 0.4, 17, 16, 16)
+  > correios = Correios.new(76410000, 74932180)
+  > correios.calcular_frete(Correios::Servico::PAC, 0.4, 17, 16, 16)
 
 
   # Para calcular mais de um serviço
-  #Neste caso o retorno será um array.  
-  correios = Correios.new(76410000, 74932180)
-  correios.calcular_frete([Correios::Servico::PAC, Correios::Servico::SEDEX], 0.4, 17, 16, 16)
-  
+  # Neste caso o retorno será um hash.  
+  > correios = Correios.new(76410000, 74932180)
+  > frete = correios.calcular_frete([Correios::Servico::PAC, Correios::Servico::SEDEX], 0.4, 17, 16, 16)
+
+  > frete[:pac]
+  => #<Correios::Servico:0x10189ad08 @message="", @servico=:pac, @erro="0", @prazo=5, @valor=11.5>
+  > frete[:sedex]
+  => #<Correios::Servico:0x10189a948 @message="", @servico=:sedex, @erro="0", @prazo=4, @valor=14.7> 
 
 == Outras informações
 
   Definição do método calcula frete:
 
-  calcular_frete(tipo, peso, comprimento, 
+  calcular_frete(servicos, peso, comprimento, 
                 altura, largura, diametro = 0, mao_propria = NAO, 
                 valor_declarado = 0, aviso_recebimento = NAO)  
   

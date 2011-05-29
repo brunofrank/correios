@@ -69,9 +69,9 @@ class Correios
     xml = XmlSimple.xml_in(open("#{host}#{path}?#{params}").read)
 
     if xml["cServico"].size > 1
-      servicos = []
+      servicos = {}
       xml["cServico"].each do |servico|
-        servicos << Servico.new(servico)
+        servicos[Servico::SERVICOS[servico["Codigo"].to_s.to_i]] = Servico.new(servico)
       end
     else
       servicos = Servico.new(xml["cServico"].first)
