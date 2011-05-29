@@ -2,9 +2,9 @@ require 'rubygems'
 require 'rake'
 require 'echoe'
 
-Echoe.new('calculadora-correios', '0.1.0') do |p|
-  p.description    = "Calcula o valor do frete dos correios"
-  p.url            = "https://github.com/brunofrank/Calculadora-Correios"
+Echoe.new('correios', '0.2.0') do |p|
+  p.description    = "Gem para calculo de valor e restreamento dos correios"
+  p.url            = "https://github.com/brunofrank/correios"
   p.author         = "Bruno Frank"
   p.email          = "bfscordeiro@gmail.com"
   p.ignore_pattern = ["tmp/*", "script/*"]

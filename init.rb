@@ -1,1 +1,1 @@
-require 'calculadora-correios'
+require 'correios'

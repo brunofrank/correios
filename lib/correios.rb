@@ -23,9 +23,13 @@ class Correios
   SIM = 'S'
   NAO = 'N'
   
-  def self.calcula_frete(tipo, cep_origem, cep_destino, peso, comprimento, 
-                         altura, largura, diametro, mao_propria = NAO, 
-                         valor_declarado = 0, aviso_recebimento = NAO)
+  def initialize(cep_origem, cep_destino)
+    @cep_origem = cep_origem 
+    @cep_destino = cep_destino     
+  end
+  
+  def calcula_frete(tipo, peso, comprimento, altura, largura, diametro, mao_propria = NAO, 
+                    valor_declarado = 0, aviso_recebimento = NAO)
     host = 'http://ws.correios.com.br'
     path = '/calculador/CalcPrecoPrazo.aspx'
     
@@ -34,8 +38,8 @@ class Correios
       :sDsSenha => '',
       :StrRetorno => "xml",
       :nCdServico => tipo,
-      :sCepOrigem => cep_origem,
-      :sCepDestino => cep_destino,
+      :sCepOrigem => @cep_origem,
+      :sCepDestino => @cep_destino,
       :nVlPeso => peso,
       :nCdFormato => 1,
       :nVlComprimento => comprimento,
@@ -52,7 +56,10 @@ class Correios
     
     xml = XmlSimple.xml_in(open("#{host}#{path}?#{params}").read)
     if xml["cServico"].first["Erro"].first == '0'    
-      xml['cServico'].first["Valor"].first.gsub(',', '.').to_f
+      {
+        :valor => xml['cServico'].first["Valor"].to_s.gsub(',', '.').to_f,
+        :prazo => xml['cServico'].first["PrazoEntrega"].to_s.to_i
+      } 
     else
       raise InvalidCalcException, xml["cServico"].first["MsgErro"].first 
     end
