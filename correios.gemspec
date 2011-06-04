@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/brunofrank/correios"
   s.summary     = %q{Calcula o valor do frete dos Correios.}
   s.description = %q{Gem para calculo de valor e restreamento dos Correios.}
+  s.add_dependency("xml-simple")
 
   s.rubyforge_project = "correios"
 
