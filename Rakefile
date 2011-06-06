@@ -1,14 +1,9 @@
-require 'rubygems'
-require 'rake'
-require 'echoe'
+require 'bundler'
+require 'rake/testtask'
+Bundler::GemHelper.install_tasks
 
-Echoe.new('correios', '0.5.0') do |p|
-  p.description    = "Gem para calculo de valor e restreamento dos correios"
-  p.url            = "https://github.com/brunofrank/correios"
-  p.author         = "Bruno Frank"
-  p.email          = "bfscordeiro@gmail.com"
-  p.ignore_pattern = ["tmp/*", "script/*"]
-  p.development_dependencies = ['xml-simple']
+# just 'rake test'
+Rake::TestTask.new do |t|
+  t.libs << "lib"
+  t.test_files = Dir["test/**/test*.rb"]
 end
-
-Dir["#{File.dirname(__FILE__)}/tasks/*.rake"].sort.each { |ext| load ext }
