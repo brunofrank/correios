@@ -1,3 +1,3 @@
-module Correios
+class Correios
   VERSION = "0.5.0"
 end
