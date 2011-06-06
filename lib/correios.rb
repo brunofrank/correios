@@ -21,11 +21,11 @@ class Correios
     attr_reader :servico, :valor, :prazo, :erro, :message
     
     def initialize(servico)
-      @servico = SERVICOS[servico["Codigo"].to_s.to_i]
-      @valor = servico["Valor"].to_s.gsub(',', '.').to_f
-      @prazo = servico["PrazoEntrega"].to_s.to_i
-      @erro = servico["Erro"].to_s
-      @message = servico["MsgErro"].to_s
+      @servico = SERVICOS[servico["Codigo"].first.to_i]
+      @valor = servico["Valor"].first.gsub(/,/, '.').to_f
+      @prazo = servico["PrazoEntrega"].first.to_i
+      @erro = servico["Erro"].first.to_i
+      @message = servico["MsgErro"].first
     end
     
     def valid?
@@ -46,11 +46,14 @@ class Correios
     host = 'http://ws.correios.com.br'
     path = '/calculador/CalcPrecoPrazo.aspx'
     
+    identificadores = servicos
+    identificadores = servicos.to_a.join(',') unless servicos.kind_of? Fixnum
+    
     params = {
       :nCdEmpresa => '',
       :sDsSenha => '',
       :StrRetorno => "xml",
-      :nCdServico => servicos.to_a.join(','),
+      :nCdServico => identificadores,
       :sCepOrigem => @cep_origem,
       :sCepDestino => @cep_destino,
       :nVlPeso => peso,
@@ -62,12 +65,19 @@ class Correios
       :sCdMaoPropria => mao_propria,
       :nVlValorDeclarado => valor_declarado,
       :sCdAvisoRecebimento => aviso_recebimento
-    }                                
+    }
     
     params = params.to_a.map {|item| item.to_a.join('=')} .join('&')
-    
     xml = XmlSimple.xml_in(open("#{host}#{path}?#{params}").read)
 
+    setup_services xml, servicos
+  end
+  
+  def get_xml url
+    XmlSimple.xml_in(open(url).read)
+  end
+  
+  def setup_services xml, servicos
     if xml["cServico"].size > 1
       servicos = {}
       xml["cServico"].each do |servico|
@@ -76,7 +86,6 @@ class Correios
     else
       servicos = Servico.new(xml["cServico"].first)
     end
-    
-    return servicos
+    servicos
   end
 end
