@@ -42,7 +42,7 @@ class Correios
     WEBSRO = "http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI"
 
     def self.buscar(codigo)
-      pagina = Nokogiri::HTML(open("#{WEBSRO}=#{codigo}"))
+      pagina = tracking_page(codigo)
 
       return false unless pagina.xpath("//tr").count > 0
 
@@ -60,6 +60,10 @@ class Correios
       end
 
       sro
+    end
+
+    def self.tracking_page(shipping_code)
+      Nokogiri::HTML(open("#{WEBSRO}=#{shipping_code}"))
     end
   end
 
