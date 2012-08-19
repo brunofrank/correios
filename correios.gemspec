@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{Calcula o valor do frete dos Correios.}
   s.description = %q{Gem para calculo de valor e restreamento dos Correios.}
   s.add_dependency("xml-simple")
+  s.add_dependency("nokogiri")
+  s.add_development_dependency("mocha")
 
   s.rubyforge_project = "correios"
 
