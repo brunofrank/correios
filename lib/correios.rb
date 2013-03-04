@@ -34,27 +34,34 @@ class Correios
     end
   end
 
-  class HelperRastreamento
-    attr_accessor :data, :local, :descricao, :detalhes
-  end
-
   class Rastreamento
     WEBSRO = "http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI"
 
-    def self.buscar(codigo)
-      pagina = tracking_page(codigo)
+    def initialize(codigo)
+      if codigo.nil? or codigo.empty?
+        raise ArgumentError, "Especifique o código de rastreamento corretamente."
+      end
 
-      return false unless pagina.xpath("//tr").count > 0
+      @codigo = codigo
+    end
 
-      sro = Array.new
+    def buscar
+      pagina = rastrear
+
+      return if pagina.xpath("//tr").count == 0
+
+      sro = []
 
       pagina.xpath("//tr[position() > 1]").each do |linha|
         if linha.search("td").count > 1
-          sro << HelperRastreamento.new.tap do |registro|
-            registro.data = DateTime.strptime(linha.search("td[@rowspan][1]").text.strip, "%d/%m/%Y %H:%M")
-            registro.local = linha.search("td[2]").text.strip
-            registro.descricao = linha.search("td[3]").text.strip
-            registro.detalhes = linha.search(".//following-sibling::tr[1]").text.strip if linha.search("td[@rowspan='2'][1]").count > 0
+          sro << {
+            :data => DateTime.strptime(linha.search("td[@rowspan][1]").text.strip, "%d/%m/%Y %H:%M"),
+            :local => linha.search("td[2]").text.strip,
+            :descricao => linha.search("td[3]").text.strip
+          }
+
+          if linha.search("td[@rowspan='2'][1]").count > 0
+            sro.last.merge! :detalhes => linha.search(".//following-sibling::tr[1]").text.strip
           end
         end
       end
@@ -62,8 +69,13 @@ class Correios
       sro
     end
 
-    def self.tracking_page(shipping_code)
-      Nokogiri::HTML(open("#{WEBSRO}=#{shipping_code}"))
+    def chegou?
+      buscar.first[:descricao] == "Entrega Efetuada"
+    end
+
+    private
+    def rastrear
+      Nokogiri::HTML open("#{WEBSRO}=#{@codigo}")
     end
   end
 
