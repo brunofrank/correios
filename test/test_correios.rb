@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require "test/unit"
 require "correios"
-require "mocha"
+require "mocha/setup"
 
 class CorreiosTest < Test::Unit::TestCase
   def setup
