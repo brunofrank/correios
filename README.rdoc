@@ -5,43 +5,56 @@ Gem para cálculo de frete usando o e rastreamento dos correios usando webservic
 == Instalação
 
   $ gem install correios
- 
+
 == Como Usar
 
   > require 'correios'
-  
+
   # Para calcular apenas um serviço
   > correios = Correios.new(76410000, 74932180)
   > correios.calcular_frete(Correios::Servico::PAC, 0.4, 17, 16, 16)
 
 
   # Para calcular mais de um serviço
-  # Neste caso o retorno será um hash.  
+  # Neste caso o retorno será um hash.
   > correios = Correios.new(76410000, 74932180)
   > frete = correios.calcular_frete([Correios::Servico::PAC, Correios::Servico::SEDEX], 0.4, 17, 16, 16)
 
   > frete[:pac]
   => #<Correios::Servico:0x10189ad08 @message="", @servico=:pac, @erro="0", @prazo=5, @valor=11.5>
   > frete[:sedex]
-  => #<Correios::Servico:0x10189a948 @message="", @servico=:sedex, @erro="0", @prazo=4, @valor=14.7> 
+  => #<Correios::Servico:0x10189a948 @message="", @servico=:sedex, @erro="0", @prazo=4, @valor=14.7>
 
 == Outras informações
 
   Definição do método calcula frete:
 
-  calcular_frete(servicos, peso, comprimento, 
-                altura, largura, diametro = 0, mao_propria = NAO, 
-                valor_declarado = 0, aviso_recebimento = NAO)  
-  
+  calcular_frete(servicos, peso, comprimento,
+                altura, largura, diametro = 0, mao_propria = NAO,
+                valor_declarado = 0, aviso_recebimento = NAO)
+
 
   Serviços:
-  
+
   Correios::Servico::PAC
   Correios::Servico::SEDEX
   Correios::Servico::SEDEX10
   Correios::Servico::SEDEX_HOJE
   Correios::Servico::ESEDEX
-  
+
+== Rastreamento
+
+  require "correios"
+
+  rastreamento = Correios::Rastreamento.new "SS987654321BR"
+  rastreamento.buscar
+
+  #=> [{ :data => "21/04/2012 14:21", :local => "CTE SAUDE - SAO PAULO/SP", :descricao => "", :detalhes => "Em trânsito para CEE CURITIBA - CURITIBA/PR" }]
+
+  rastreamento.chegou?
+
+  #=> true
+
 == Contato
 
 Caso tenha alguma dúvida ou sugestão entre em contato: bfscordeiro (em) gmail.com
