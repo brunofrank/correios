@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require "test/unit"
 require "correios"
-require "mocha"
+require "mocha/setup"
 
 class CorreiosTest < Test::Unit::TestCase
   def setup
@@ -71,16 +71,33 @@ class CorreiosTest < Test::Unit::TestCase
   end
 
   def test_track_service_with_invalid_parameters
-    assert_equal Correios::Rastreamento.buscar(""), false
-    assert_equal Correios::Rastreamento.buscar(nil), false
+    assert_raise ArgumentError do
+      Correios::Rastreamento.new ""
+    end
+
+    assert_raise ArgumentError do
+      Correios::Rastreamento.new
+    end
   end
 
   def test_parsing_tracking
     fixture = File.open("test/fixture/rastreamento.html").read
 
-    Correios::Rastreamento.stubs(:tracking_page).returns(Nokogiri::HTML(fixture))
-    result = Correios::Rastreamento.buscar("")
-    assert_equal result.first.descricao, "Entrega Efetuada"
-    assert_equal result.last.descricao, "Postagem - DH"
+    rastreamento = Correios::Rastreamento.new "BR01"
+    rastreamento.stubs(:rastrear).returns Nokogiri::HTML(fixture)
+
+    result = rastreamento.buscar
+
+    assert_equal result.first[:descricao], "Entrega Efetuada"
+    assert_equal result.last[:descricao], "Postagem - DH"
+  end
+
+  def test_check_the_receipt_of_package
+    fixture = File.open("test/fixture/rastreamento.html").read
+
+    rastreamento = Correios::Rastreamento.new "BR01"
+    rastreamento.stubs(:rastrear).returns Nokogiri::HTML(fixture)
+
+    assert_equal rastreamento.chegou?, true
   end
 end
