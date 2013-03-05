@@ -72,11 +72,11 @@ class CorreiosTest < Test::Unit::TestCase
 
   def test_track_service_with_invalid_parameters
     assert_raise ArgumentError do
-        Correios::Rastreamento.new("").buscar
+      Correios::Rastreamento.new ""
     end
 
     assert_raise ArgumentError do
-        Correios::Rastreamento.new(nil).buscar
+      Correios::Rastreamento.new
     end
   end
 
@@ -93,7 +93,7 @@ class CorreiosTest < Test::Unit::TestCase
   end
 
   def test_check_the_receipt_of_package
-     fixture = File.open("test/fixture/rastreamento.html").read
+    fixture = File.open("test/fixture/rastreamento.html").read
 
     rastreamento = Correios::Rastreamento.new "BR01"
     rastreamento.stubs(:rastrear).returns Nokogiri::HTML(fixture)

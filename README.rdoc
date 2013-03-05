@@ -49,7 +49,7 @@ Gem para cálculo de frete usando o e rastreamento dos correios usando webservic
   rastreamento = Correios::Rastreamento.new "SS987654321BR"
   rastreamento.buscar
 
-  #=> [{ :data => "21/04/2012 14:21", :local => "CTE SAUDE - SAO PAULO/SP", :descricao => "", :detalhes => "Em trânsito para CEE CURITIBA - CURITIBA/PR" }]
+  #=> [{ :data => "21/04/2012 14:21", :local => "CTE SAUDE - SAO PAULO/SP", :descricao => "", :detalhes => "Entrega Efetuada" }]
 
   rastreamento.chegou?
 
