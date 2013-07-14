@@ -115,7 +115,8 @@ class Correios
     }
 
     params = params.to_a.map {|item| item.to_a.join('=')} .join('&')
-    xml = XmlSimple.xml_in(open("#{host}#{path}?#{params}").read)
+    xml_str = open("#{host}#{path}?#{params}").read
+    xml = XmlSimple.xml_in(xml_str)
 
     setup_services xml, servicos
   end
@@ -128,7 +129,7 @@ class Correios
     if xml["cServico"].size > 1
       servicos = {}
       xml["cServico"].each do |servico|
-        servicos[Servico::SERVICOS[servico["Codigo"].to_s.to_i]] = Servico.new(servico)
+        servicos[Servico::SERVICOS[servico["Codigo"].first.to_i]] = Servico.new(servico) rescue nil
       end
     else
       servicos = Servico.new(xml["cServico"].first)
